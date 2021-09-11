@@ -7,4 +7,3 @@
 
 1. Font Awesome
 2. Bootstrap 4
-3. Google Fonts
