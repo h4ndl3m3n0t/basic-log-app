@@ -1,7 +1,7 @@
 # Basic Log App
 
 
-## Create logs on day to day activities.
+## Create logs on day to day activities
 
 ### Uses
 
