@@ -11,14 +11,8 @@ $this->title = $model->title;
 ?>
 <div class="log-view pt-5">
 
-    <div class="d-flex justify-content-between">
-        <div>
-            <h2><?= Html::encode($this->title).' '.$model->getStatusLabels()[$model->status] ?></h2>
-        </div>
-        <div>
-            <?= Yii::$app->formatter->asDateTime($model->created_at) ?>
-        </div>
-    </div>
+    <h2><?= Html::encode($this->title).' '.$model->getStatusLabels()[$model->status] ?></h2>
+    <h6><?= Yii::$app->formatter->asDateTime($model->created_at) ?></h6>
     <div class="d-flex justify-content-center">
         <p>
             <?= Html::encode($model->body) ?>
@@ -29,7 +23,7 @@ $this->title = $model->title;
             <?= Html::a('Delete', ['delete', 'log_id' => $model->log_id], [
                 'class' => 'btn btn-danger btn-block',
                 'data' => [
-                    'confirm' => 'Are you sure you want to delete this item?',
+                    'confirm' => 'Are you sure you want to delete this log?',
                     'method' => 'post',
                 ],
             ]) ?>

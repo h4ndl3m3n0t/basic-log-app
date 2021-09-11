@@ -53,13 +53,11 @@ class LogController extends Controller
                 ->creator(Yii::$app->user->id),
             'pagination' => [
                 'pageSize' => 25
-            ],
-            /*'sort' => [
+            ],'sort' => [
                 'defaultOrder' => [
-                    'log_id' => SORT_DESC,
+                    'created_at' => SORT_DESC,
                 ]
             ],
-            */
         ]);
 
         return $this->render('index', [
@@ -75,8 +73,9 @@ class LogController extends Controller
      */
     public function actionView(string $log_id)
     {
+        $model = $this->findModel($log_id);
         return $this->render('view', [
-            'model' => $this->findModel($log_id),
+            'model' => $model,
         ]);
     }
 
@@ -91,11 +90,6 @@ class LogController extends Controller
 
         if ($this->request->isPost) {
             $model->generateLogId();
-
-            if($model->password && $model->confirm_password){
-                $model->status = Log::STATUS_LOCK;
-                $model->generatePassword();
-            }
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['index']);
             }

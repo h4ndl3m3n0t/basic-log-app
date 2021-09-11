@@ -14,7 +14,6 @@ use yii\helpers\StringHelper;
  * @property string|null $title
  * @property string $body
  * @property int|null $status
- * @property string|null $password_hash
  * @property int|null $created_at
  * @property int|null $updated_at
  * @property int|null $created_by
@@ -25,9 +24,6 @@ class Log extends \yii\db\ActiveRecord
 {
     const STATUS_UNLOCK = 0;
     const STATUS_LOCK = 1;
-
-    public $password;
-    public $confirm_password;
 
     /**
      * {@inheritdoc}
@@ -62,12 +58,8 @@ class Log extends \yii\db\ActiveRecord
             [['status', 'created_at', 'updated_at', 'created_by'], 'integer'],
             [['log_id'], 'string', 'max' => 512],
             [['title'], 'string', 'max' => 200],
-            [['password_hash'], 'string', 'max' => 255],
             [['log_id'], 'unique'],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
-
-            [['password', 'confirm_password'], 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
-            ['confirm_password', 'compare', 'compareAttribute' => 'password'],
         ];
     }
 
@@ -81,12 +73,9 @@ class Log extends \yii\db\ActiveRecord
             'title' => 'Title (optional)',
             'body' => 'Body (required)',
             'status' => 'Status',
-            'password_hash' => 'Password Hash',
             'created_at' => 'Created',
             'updated_at' => 'Modified',
             'created_by' => 'Created By',
-            'password' => 'Password (optional)',
-            'confirm_password' => 'Confirm Password (Must be same as password if filled)'
         ];
     }
 
@@ -126,9 +115,5 @@ class Log extends \yii\db\ActiveRecord
      */
     public function generateLogId(){
         $this->log_id = time().'_'.Yii::$app->security->generateRandomString(255);
-    }
-
-    public function generatePassword(){
-        $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
     }
 }
