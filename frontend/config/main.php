@@ -55,6 +55,7 @@ return [
                 'log' => 'log/index',
                 'log/create' => 'log/create',
                 'log/delete/<log_id>' => 'log/delete',
+                'log/sec/<log_id>' => 'log/sec',
                 'log/<log_id>' => 'log/view',
             ],
         ],

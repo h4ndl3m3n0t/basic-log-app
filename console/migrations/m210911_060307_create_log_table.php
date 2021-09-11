@@ -19,7 +19,6 @@ class m210911_060307_create_log_table extends Migration
             'log_id' => $this->string(512),
             'title' => $this->string(200),
             'body' => $this->text()->notNull(),
-            'status' => $this->tinyInteger(1)->defaultValue(0),
             'created_at' => $this->integer(11),
             'updated_at' => $this->integer(11),
             'created_by' => $this->integer(11),

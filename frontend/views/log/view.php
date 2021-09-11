@@ -11,7 +11,7 @@ $this->title = $model->title;
 ?>
 <div class="log-view pt-5">
 
-    <h2><?= Html::encode($this->title).' '.$model->getStatusLabels()[$model->status] ?></h2>
+    <h2><?= Html::encode($this->title) ?></h2>
     <h6><?= Yii::$app->formatter->asDateTime($model->created_at) ?></h6>
     <div class="d-flex justify-content-center">
         <p>

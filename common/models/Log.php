@@ -13,7 +13,6 @@ use yii\helpers\StringHelper;
  * @property string $log_id
  * @property string|null $title
  * @property string $body
- * @property int|null $status
  * @property int|null $created_at
  * @property int|null $updated_at
  * @property int|null $created_by
@@ -22,8 +21,6 @@ use yii\helpers\StringHelper;
  */
 class Log extends \yii\db\ActiveRecord
 {
-    const STATUS_UNLOCK = 0;
-    const STATUS_LOCK = 1;
 
     /**
      * {@inheritdoc}
@@ -54,8 +51,7 @@ class Log extends \yii\db\ActiveRecord
         return [
             [['log_id', 'body'], 'required'],
             [['body'], 'string'],
-            [['status'], 'default', 'value' => self::STATUS_UNLOCK],
-            [['status', 'created_at', 'updated_at', 'created_by'], 'integer'],
+            [['created_at', 'updated_at', 'created_by'], 'integer'],
             [['log_id'], 'string', 'max' => 512],
             [['title'], 'string', 'max' => 200],
             [['log_id'], 'unique'],
@@ -72,17 +68,9 @@ class Log extends \yii\db\ActiveRecord
             'log_id' => 'Log ID',
             'title' => 'Title (optional)',
             'body' => 'Body (required)',
-            'status' => 'Status',
             'created_at' => 'Created',
             'updated_at' => 'Modified',
             'created_by' => 'Created By',
-        ];
-    }
-
-    public function getStatusLabels(){
-        return [
-            self::STATUS_LOCK => '<i class="fas fa-lock"></i> (Lock)',
-            self::STATUS_UNLOCK => '<i class="fas fa-lock-open"></i> (Unlock)'
         ];
     }
 
@@ -116,4 +104,5 @@ class Log extends \yii\db\ActiveRecord
     public function generateLogId(){
         $this->log_id = time().'_'.Yii::$app->security->generateRandomString(255);
     }
+
 }

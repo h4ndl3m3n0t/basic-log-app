@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\Log;
+use frontend\models\LogPasswordForm;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -90,6 +91,7 @@ class LogController extends Controller
 
         if ($this->request->isPost) {
             $model->generateLogId();
+
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['index']);
             }

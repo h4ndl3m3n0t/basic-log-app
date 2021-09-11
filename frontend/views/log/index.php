@@ -37,12 +37,6 @@ $this->title = 'My Logs';
             ],
             // 'title',
             // 'body:ntext',
-            [
-                'attribute' => 'status',
-                'content' => function($model){
-                    return $model->getStatusLabels()[$model->status];
-                }
-            ],
             // 'password_hash',
             [
                 'attribute' => 'created_at',
