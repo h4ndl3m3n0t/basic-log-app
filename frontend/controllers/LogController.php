@@ -2,11 +2,13 @@
 
 namespace frontend\controllers;
 
+use Yii;
 use common\models\Log;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * LogController implements the CRUD actions for Log model.
@@ -21,8 +23,17 @@ class LogController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -38,12 +49,12 @@ class LogController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Log::find(),
-            /*
+            'query' => Log::find()
+                ->creator(Yii::$app->user->id),
             'pagination' => [
-                'pageSize' => 50
+                'pageSize' => 25
             ],
-            'sort' => [
+            /*'sort' => [
                 'defaultOrder' => [
                     'log_id' => SORT_DESC,
                 ]
@@ -62,7 +73,7 @@ class LogController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($log_id)
+    public function actionView(string $log_id)
     {
         return $this->render('view', [
             'model' => $this->findModel($log_id),
@@ -79,8 +90,14 @@ class LogController extends Controller
         $model = new Log();
 
         if ($this->request->isPost) {
+            $model->generateLogId();
+
+            if($model->password && $model->confirm_password){
+                $model->status = Log::STATUS_LOCK;
+                $model->generatePassword();
+            }
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'log_id' => $model->log_id]);
+                return $this->redirect(['index']);
             }
         } else {
             $model->loadDefaultValues();
@@ -92,33 +109,13 @@ class LogController extends Controller
     }
 
     /**
-     * Updates an existing Log model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $log_id Log ID
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($log_id)
-    {
-        $model = $this->findModel($log_id);
-
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'log_id' => $model->log_id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
      * Deletes an existing Log model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $log_id Log ID
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($log_id)
+    public function actionDelete(string $log_id)
     {
         $this->findModel($log_id)->delete();
 
@@ -132,9 +129,12 @@ class LogController extends Controller
      * @return Log the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($log_id)
+    protected function findModel(string $log_id)
     {
-        if (($model = Log::findOne($id)) !== null) {
+        if (($model = Log::find()
+            ->log($log_id)
+            ->creator(Yii::$app->user->id)
+            ->one()) !== null) {
             return $model;
         }
 

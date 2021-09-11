@@ -3,6 +3,9 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\helpers\StringHelper;
 
 /**
  * This is the model class for table "{{%log}}".
@@ -20,12 +23,31 @@ use Yii;
  */
 class Log extends \yii\db\ActiveRecord
 {
+    const STATUS_UNLOCK = 0;
+    const STATUS_LOCK = 1;
+
+    public $password;
+    public $confirm_password;
+
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
         return '{{%log}}';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function behaviors(){
+        return [
+            TimestampBehavior::class,
+            [
+                'class' => BlameableBehavior::class,
+                'updatedByAttribute' => false
+            ]
+        ];
     }
 
     /**
@@ -36,13 +58,16 @@ class Log extends \yii\db\ActiveRecord
         return [
             [['log_id', 'body'], 'required'],
             [['body'], 'string'],
-            [['status', 'created_at', 'updated_at', 'created_by'], 'default', 'value' => null],
+            [['status'], 'default', 'value' => self::STATUS_UNLOCK],
             [['status', 'created_at', 'updated_at', 'created_by'], 'integer'],
             [['log_id'], 'string', 'max' => 512],
             [['title'], 'string', 'max' => 200],
             [['password_hash'], 'string', 'max' => 255],
             [['log_id'], 'unique'],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+
+            [['password', 'confirm_password'], 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+            ['confirm_password', 'compare', 'compareAttribute' => 'password'],
         ];
     }
 
@@ -53,14 +78,27 @@ class Log extends \yii\db\ActiveRecord
     {
         return [
             'log_id' => 'Log ID',
-            'title' => 'Title',
-            'body' => 'Body',
+            'title' => 'Title (optional)',
+            'body' => 'Body (required)',
             'status' => 'Status',
             'password_hash' => 'Password Hash',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Created',
+            'updated_at' => 'Modified',
             'created_by' => 'Created By',
+            'password' => 'Password (optional)',
+            'confirm_password' => 'Confirm Password (Must be same as password if filled)'
         ];
+    }
+
+    public function getStatusLabels(){
+        return [
+            self::STATUS_LOCK => '<i class="fas fa-lock"></i> (Lock)',
+            self::STATUS_UNLOCK => '<i class="fas fa-lock-open"></i> (Unlock)'
+        ];
+    }
+
+    public function getLogId(){
+        return StringHelper::truncate($this->log_id,25);
     }
 
     /**
@@ -70,7 +108,7 @@ class Log extends \yii\db\ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
     /**
@@ -80,5 +118,17 @@ class Log extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \common\models\query\LogQuery(get_called_class());
+    }
+
+    /**
+     * Generate Log ID
+     * @return void
+     */
+    public function generateLogId(){
+        $this->log_id = time().'_'.Yii::$app->security->generateRandomString(255);
+    }
+
+    public function generatePassword(){
+        $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
     }
 }

@@ -9,6 +9,7 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'name' => 'Log Basic',
+    'defaultRoute' => 'site/login',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
@@ -51,9 +52,13 @@ return [
                 '/reset-password/<token:\w+>' => 'site/reset-password',
 
                 //log routes
-                //todo: for logs
+                'log' => 'log/index',
+                'log/create' => 'log/create',
+                'log/delete/<log_id>' => 'log/delete',
+                'log/<log_id>' => 'log/view',
             ],
         ],
     ],
     'params' => $params,
 ];
+

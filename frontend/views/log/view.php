@@ -7,37 +7,33 @@ use yii\widgets\DetailView;
 /* @var $model common\models\Log */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Logs', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="log-view">
+<div class="log-view pt-5">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'log_id' => $model->log_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'log_id' => $model->log_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'log_id',
-            'title',
-            'body:ntext',
-            'status',
-            'password_hash',
-            'created_at',
-            'updated_at',
-            'created_by',
-        ],
-    ]) ?>
+    <div class="d-flex justify-content-between">
+        <div>
+            <h2><?= Html::encode($this->title).' '.$model->getStatusLabels()[$model->status] ?></h2>
+        </div>
+        <div>
+            <?= Yii::$app->formatter->asDateTime($model->created_at) ?>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <p>
+            <?= Html::encode($model->body) ?>
+        </p>
+    </div>
+    <div>
+        <p>
+            <?= Html::a('Delete', ['delete', 'log_id' => $model->log_id], [
+                'class' => 'btn btn-danger btn-block',
+                'data' => [
+                    'confirm' => 'Are you sure you want to delete this item?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+        </p>
+    </div>
 
 </div>

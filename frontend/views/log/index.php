@@ -6,8 +6,7 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Logs';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'My Logs';
 ?>
 <div class="log-index">
 
@@ -20,19 +19,41 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
+        'pager' => [
+            'class' => 'yii\bootstrap4\LinkPager'
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'log_id',
-            'title',
-            'body:ntext',
-            'status',
-            'password_hash',
-            //'created_at',
+
+            [
+                'attribute' => 'log_id',
+                'content' => function($model){
+                    return Html::a($model->getLogId(),[
+                        'log/view',
+                        'log_id' => $model->log_id
+                    ],['class' => 'text-dark']);
+                }
+            ],
+            // 'title',
+            // 'body:ntext',
+            [
+                'attribute' => 'status',
+                'content' => function($model){
+                    return $model->getStatusLabels()[$model->status];
+                }
+            ],
+            // 'password_hash',
+            [
+                'attribute' => 'created_at',
+                'content' => function($model){
+                    return Yii::$app->formatter->asRelativeTime($model->created_at);
+                }
+            ],
             //'updated_at',
             //'created_by',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            // ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

@@ -31,4 +31,29 @@ class LogQuery extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
+
+
+    /**
+     * select via log
+     *
+     * @param string $log_id
+     * @return $this
+     */
+    public function log(string $log_id){
+        return $this->andWhere([
+            'log_id' => $log_id
+        ]);
+    }
+
+    /**
+     * select via creator
+     *
+     * @param int $creator
+     * @return $this
+     */
+    public function creator(int $creator){
+        return $this->andWhere([
+            'created_by' => $creator
+        ]);
+    }
 }

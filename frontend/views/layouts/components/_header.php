@@ -9,7 +9,7 @@ use yii\helpers\StringHelper;
     <?php
     NavBar::begin([
         'brandLabel' => '<i class="fas fa-edit"></i> '.Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
+        'brandUrl' => Yii::$app->user->isGuest ? ['site/login'] : ['log/index'],
         'options' => [
             'class' => 'navbar navbar-expand-md navbar-dark bg-dark',
         ],
